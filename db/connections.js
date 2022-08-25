@@ -6,8 +6,8 @@ const db = mysql.createConnection({
     password: '',
     database: 'employee_tracker'
 },
-    console.log('Employee_Tracker added.'
-));
+    console.log('Employee_Tracker added.')
+);
 
 
 

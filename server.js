@@ -1,40 +1,72 @@
-// import express
-const express = require("express");
-// const inquirer = require ('inquirer');
-const mysql = require("mysql2");
-// add designation port
-const PORT = process.env.PORT || 3001;
-const app = express();
+// import dependencies
+const inquirer = require('inquirer');
 
-// adding connections\
-const db = require("./db/connections");
-// express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// adding connections
+const db = require('./db/connections');
+// ---- add a const to Db index after writing functions const {functions...} = require (source)
+const {viewDepts, viewRoles, viewAEmployees, createDept} = require('./db/index')
 
-// worked in insomnia
-// app.get("/", (req, res) => {
-//   res.json({
-//     message: "hello",
-//   });
-// });
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
-
-// Start Express.js Server on port 3001
-db.connect((err) => {
-  if (err) throw err;
-  console.log("Database connected.");
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-});
-
-// add questions for user
+// add questions for user -- may move to own file
 // what would you like to view choices .then view
+function choices() {
+    inquirer.prompt([
+        {
+            type: 'list',
+            name: 'direction',
+            message: 'What would you like to do?',
+            choices: ['View Departments', 'View Roles', 'View Employees', 'Add Department']
+        }
+    ])
+    .then (function(data){
+        console.log(data);
+        switch (data.direction) {
+            case 'View Departments':
+            viewDepts();
+            break;
+
+            case 'View Roles':
+            viewRoles();
+            break;
+
+            case 'View Employees':
+            viewAEmployees();
+            break;
+
+            case 'Add Department':
+            addDept();
+        }
+    })
+};
+
+// function getRoles () {
+//     viewRoles().then (function(role){
+//         console.log(role);
+//     })
+// }
+
+//  TRY PUTTING ALL THE FUNCTIONS TOGETHER!!! 
+
+function addDept (){
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What department are you adding?'
+        }
+    ])
+    .then ( (data) => {
+       createDept(data.department);
+       console.log('Department added.');
+       
+    })
+
+}
+
+choices();
+
+// module.exports = choices ();
+// how do i go filter throught the options?  switch?
 
 // view departments
 
