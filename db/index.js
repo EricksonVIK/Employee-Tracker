@@ -7,7 +7,6 @@ function viewDepts() {
     db.query('SELECT * FROM department', function(err, res) {
         if (err) throw err
         console.table(res)
-        choices();
     })
 };
 
@@ -37,6 +36,7 @@ function createDept (department){
     db.query(`INSERT INTO department (names) VALUES ('${department}')`, function (err, res){
         if (err) throw err
         viewDepts();
+        choices();
     })
 }
 
