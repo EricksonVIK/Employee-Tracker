@@ -1,61 +1,56 @@
-const db = require('./connections');
+const db = require("./connections");
 // const choices = require('../server')
 
-//  view all departments
-        // views all departments
-function viewDepts() {
-    db.query('SELECT * FROM department', function(err, res) {
-        if (err) throw err
-        console.table(res)
-    })
-};
 
-
-// views all roles
-function viewRoles() {
-    db.query('SELECT * FROM roles', function (err, res) {
-        console.table(res);
-    })
-    
-};
 
 // function viewRoles() {
 //     db.promise().query('SELECT * FROM roles')
 //     };
-
-
-// views all employees
-function viewAEmployees() {
-    db.query('SELECT * FROM employee', function(err, res) {
-        if (err) throw err
-        console.table(res)
-    } )
+// Department array
+const collectDepartments = () => {
+    const deptArr = [];
+    db.query(`SELECT * FROM department`, (err, rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        for (let i = 0; i < rows.length; i++) {
+            deptArr.push({name:rows[i].names, value:rows[i].id});
+        }
+    });
+    return deptArr;
 };
 
-function createDept (department){
-    db.query(`INSERT INTO department (names) VALUES ('${department}')`, function (err, res){
-        if (err) throw err
-        viewDepts();
-        choices();
-    })
-}
+// Employee array
+const collectEmployees = () => {
+    const employeeArr = [];
 
+    db.query (`SELECT * FROM employee`, (err, rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        for (let i=0; i < rows.length; i++) {
+            employeeArr.push({name: rows[i].first_name +  rows[i].last_name, value: rows[i].id });
+        }
+    });
+    return;
+};
 
+// Role array
+const collectRoles = () => {
+    const roleArr = [];
+    db.query(`SELECT * FROM roles`, (err, rows) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        for (let i = 0; i < rows.length; i++) {
+            roleArr.push({name:rows[i].title, value:rows[i].id});
+        }
+    });
+    return roleArr;
+};
+// view all
 
-// const collectDept = () => {
-//     const deptArr = [];
-//     db.query (`SELECT * FROM department`, (err, rows) => {
-//         if (err) {
-//             console.log(err);
-//             return;
-//         }
-//         for (let i=0; i < rows.length; i++) {
-//             deptArr.push({names: rows[i].name, value: rows[i].id})
-//         }
-//     });
-//     return;
-// };
-
-// view all 
-
-module.exports = {viewDepts, viewRoles, viewAEmployees, createDept}
+module.exports = {collectEmployees, collectDepartments, collectRoles};
