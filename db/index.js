@@ -22,20 +22,22 @@ const collectDepartments = () => {
 };
 
 // Employee array
-const collectEmployees = () => {
+const collectEmployee = () => {
     const employeeArr = [];
 
-    db.query (`SELECT * FROM employee`, (err, rows) => {
+    db.query(`SELECT * FROM employee`, (err, rows) => {
         if (err) {
             console.log(err);
             return;
         }
-        for (let i=0; i < rows.length; i++) {
-            employeeArr.push({name: rows[i].first_name +  rows[i].last_name, value: rows[i].id });
+        for (let i = 0; i < rows.length; i++) {
+            employeeArr.push({name: rows[i].first_name + ' ' + rows[i].last_name, value: rows[i].id });
         }
     });
-    return;
-};
+    return employeeArr;
+}
+
+// Manager ID array
 
 // Role array
 const collectRoles = () => {
@@ -51,6 +53,5 @@ const collectRoles = () => {
     });
     return roleArr;
 };
-// view all
 
-module.exports = {collectEmployees, collectDepartments, collectRoles};
+module.exports = {collectEmployee, collectDepartments, collectRoles};
