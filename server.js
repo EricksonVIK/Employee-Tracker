@@ -9,7 +9,7 @@ const {collectEmployee, collectDepartments, collectRoles} = require('./db/index'
 const deptArr = collectDepartments();
 const roleArr = collectRoles();
 const employeeArr = collectEmployee();
-// add questions for user -- may move to own file
+
 // what would you like to view choices .then view
 function choices() {
   inquirer
@@ -23,7 +23,7 @@ function choices() {
           "View Roles",
           "View Employees",
           "Add/Remove Department",
-          "Add Role",
+          "Add/Remove Role",
           "Add/Remove Employee",
           "Update Employee",
           "Exit",
@@ -49,8 +49,8 @@ function choices() {
               changeDept();
               break;
           
-          case "Add Role":
-              addRole();
+          case "Add/Remove Role":
+              changeRole();
               break;
           
           case "Add/Remove Employee":
@@ -96,44 +96,73 @@ function viewAEmployees() {
   });
 }
 
-// add department
+// add/remove department
 function changeDept() {
-    console.log(deptArr)
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "department",
-        message: "What department are you adding?",
-        // add validation
-      },
-    ])
-    .then((data) => {
-      console.log(data.department);
-      createDept(data.department);
-      console.log("Department added.");
-    });
-}
-
-// Create Department
-function createDept(department) {
-  db.query(
-    `INSERT INTO department (names) VALUES ('${department}')`,
-    function (err, res) {
-      if (err) throw err;
-      viewDepts();
-      choices();
+    // console.log(deptArr)
+  inquirer.prompt([
+    {
+      type: 'list',
+      name: 'addRemove',
+      message: 'Would you like to add or remove a department?',
+      choices: ['Add', 'Remove']
     }
-  );
+  ])
+    .then(data => {
+      if (data.addRemove === 'Add') {
+        inquirer.prompt([
+          {
+            type: "input",
+            name: "department",
+            message: "What department are you adding?",
+            // add validation
+          },
+        ])
+          .then((data) => {
+            let sql = `INSERT INTO department (names) VALUES ('${data.department}')`;
+            db.query(sql, [data.department], (err, res) => {
+              if (err) throw err;
+              console.log("Department added.");
+              viewDepts();
+            })
+            choices()
+        });
+      } else if (data.addRemove === 'Remove') {
+        inquirer.prompt([
+          {
+            type: 'list',
+            name: 'department',
+            message: 'Which department are you removing?',
+            choices: deptArr
+          }
+        ])
+          .then((data) => {
+            let sql = `DELETE FROM department WHERE id=${data.department}`;
+            db.query(sql, [data.department], (err, res) => {
+              if (err) throw err;
+              console.log('The department has been removed.')
+              viewDepts();
+            })
+            choices()
+          })
+      }
+    })
 }
 
 
 
-// add role
-function addRole() {
-    console.log(deptArr)
-    inquirer
-        .prompt([
+// add/remove role
+function changeRole() {
+  inquirer.prompt([
+    {
+      type: 'list',
+      name: 'addRemove',
+      message: 'Would you like to add or remove a role?',
+      choices: ['Add', 'Remove']
+    },
+  ])
+    .then(data => {
+      if (data.addRemove === 'Add') {
+        inquirer.prompt([
             {
                 type: "input",
                 name: "addedRole",
@@ -152,7 +181,6 @@ function addRole() {
             },
         ])
         .then((data => {
-            console.log (data)
             let sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
             db.query(sql, [data.addedRole, data.salary, data.deptID], (err, res) => {
                 if (err) throw err;
@@ -162,6 +190,8 @@ function addRole() {
             choices();
 
         }))
+      }
+    })
 };
 
 // add employee
@@ -294,7 +324,7 @@ function updateEmployee() {
           })
       }
     })
-}
+};
     
   
   //     .then((data => {
@@ -317,7 +347,6 @@ function updateEmployee() {
 
 // View employees by department.
 
-// Delete departments, roles, and employees.
 
 // View the total utilized budget of a department—in other words, the combined salaries of all employees in that department.
 // quit Function
