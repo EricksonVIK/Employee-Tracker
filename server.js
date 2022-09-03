@@ -99,7 +99,7 @@ function viewRoles() {
 function viewAEmployees() {
   db.query('SELECT * FROM employee', function (err, res) {
     if (err) throw err;
-    console.table(employeeArr);
+    // console.table(employeeArr);
     console.table(res);
     choices();
   });
@@ -407,17 +407,17 @@ function managedEmployees() {
     }
   ])
     .then((data) => {
-      console.log(data.manager)
-  //     let sql = `SELECT CONCAT(first_name, ' ' , last_name) AS Employee
-  //                FROM employee WHERE manager_id=${data.manager}`;
-  //     db.query(sql, [data.manager], (err, res) => {
-  //       if (err) throw err;
+      db.query(`SELECT CONCAT(first_name, " " , last_name),  AS Employee FROM employee WHERE manager_id=${data.manager}`,
+        (err, res) => {
+          if (err) throw err;
+          console.table(res);
+
   //       console.log(`
   // =============================
   //       Employee List.
   // =============================`
   //       );
-  //       viewAEmployees();
+        // viewAEmployees();
       });
     });
 };
