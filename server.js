@@ -162,7 +162,7 @@ function changeDept() {
               type: "input",
               name: "department",
               message: "What department are you adding?",
-              // add validation
+              
             },
           ])
           .then((data) => {
