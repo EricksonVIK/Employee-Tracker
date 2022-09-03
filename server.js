@@ -169,12 +169,13 @@ function changeDept() {
             let sql = `INSERT INTO department (names) VALUES ('${data.department}')`;
             db.query(sql, (err, res) => {
               if (err) throw err;
+              // console.log(res)
               deptArr.push(data.department)
               console.log(`
 ===================================
-    Department has been added.
+    ${data.department} has been added.
 ===================================`);
-              console.log(deptArr)
+              // console.log(deptArr)
               viewDepts();
             });
           });
@@ -189,7 +190,7 @@ function changeDept() {
             },
           ])
           .then((data) => {
-            console.log(data)
+            // console.log(data)
             let sql = `DELETE FROM department WHERE id=${data.department}`;
             db.query(sql, [data.department], (err, res) => {
               if (err) throw err;
@@ -199,7 +200,7 @@ function changeDept() {
               }
               console.log(`
 ====================================
-  The department has been removed.
+       Department removed.
 ====================================`);
               viewDepts();
             });
@@ -247,12 +248,13 @@ function changeRole() {
               [data.addedRole, data.salary, data.deptID],
               (err, res) => {
                 if (err) throw err;
-                viewRoles();
+                roleArr.push(data.addedRole)
                 console.log(`
 =================================
    ${data.addedRole} has been added.
 =================================
                             `);
+                viewRoles();
               }
             );
           });
@@ -270,6 +272,10 @@ function changeRole() {
             let sql = `DELETE FROM roles WHERE id=${data.deletedRole}`;
             db.query(sql, (err, res) => {
               if (err) throw err;
+              let index = roleArr.indexOf(data.deletedRole);
+              if (index > -1) {
+                roleArr.splice(index, 1);
+              }
               console.log(`
 =============================
   The role has been removed.
@@ -327,14 +333,15 @@ function changeEmployee() {
               [data.firstName, data.lastName, data.manager, data.deptID],
               (err, res) => {
                 if (err) throw err;
-                console.table(employeeArr);
+                // employeeArr.push({name: data.first_name + ' ' + data.last_namenpm})
+                // console.table(employeeArr);
 
-                viewAEmployees();
                 console.log(`
-    =============================
-      Employee has been added.
-    =============================`);
-                // maybe a push to array to automatically update questions?
+=============================
+  Employee has been added.
+=============================`);
+                // viewAEmployees();
+                choices();
               }
             );
           });
@@ -349,14 +356,14 @@ function changeEmployee() {
             },
           ])
           .then((response) => {
-            console.log(response);
             let sql = `DELETE FROM employee WHERE id=${response.employee}`;
             db.query(sql, [response.employee], (err, res) => {
               if (err) throw err;
               console.log(`
-    =============================
-      Employee has been removed.
-    =============================`);
+=============================
+  Employee has been removed.
+=============================
+              `);
               viewAEmployees();
             });
           });
