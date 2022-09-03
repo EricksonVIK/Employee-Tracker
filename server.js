@@ -1,15 +1,15 @@
 // import dependencies
-const inquirer = require("inquirer");
-require("console.table");
+const inquirer = require('inquirer');
+require('console.table');
 
 // adding connections
-const db = require("./db/connections");
+const db = require('./db/connections');
 // ---- add a const to Db index after writing functions const {functions...} = require (source)
 const {
   collectEmployee,
   collectDepartments,
   collectRoles,
-} = require("./db/index");
+} = require('./db/index');
 const deptArr = collectDepartments();
 const roleArr = collectRoles();
 const employeeArr = collectEmployee();
@@ -19,53 +19,58 @@ function choices() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "direction",
-        message: "What would you like to do?",
+        type: 'list',
+        name: 'direction',
+        message: 'What would you like to do?',
         choices: [
-          "View Departments",
-          "View Roles",
-          "View Employees",
-          "Add/Remove Department",
-          "Add/Remove Role",
-          "Add/Remove Employee",
-          "Update Employee",
-          "Exit",
+          'View Departments',
+          'View Roles',
+          'View Employees',
+          'Add/Remove Department',
+          'Add/Remove Role',
+          'Add/Remove Employee',
+          'Update Employee',
+          'Examine Manager Employee List',
+          'Exit',
         ],
       },
     ])
     .then(function (data) {
       // console.log(data);
       switch (data.direction) {
-        case "View Departments":
+        case 'View Departments':
           viewDepts();
           break;
 
-        case "View Roles":
+        case 'View Roles':
           viewRoles();
           break;
 
-        case "View Employees":
+        case 'View Employees':
           viewAEmployees();
           break;
 
-        case "Add/Remove Department":
+        case 'Add/Remove Department':
           changeDept();
           break;
 
-        case "Add/Remove Role":
+        case 'Add/Remove Role':
           changeRole();
           break;
 
-        case "Add/Remove Employee":
+        case 'Add/Remove Employee':
           changeEmployee();
           break;
 
-        case "Update Employee":
+        case 'Update Employee':
           updateEmployee();
           break;
+        
+        case 'Examine Manager Employee List':
+          managedEmployees();
+          break;
 
-        case "Exit":
+        case 'Exit':
           exit();
           break;
       }
@@ -74,7 +79,7 @@ function choices() {
 
 // View all departments
 function viewDepts() {
-  db.query("SELECT * FROM department", function (err, res) {
+  db.query('SELECT * FROM department', function (err, res) {
     if (err) throw err;
     console.table(res);
     choices();
@@ -83,7 +88,7 @@ function viewDepts() {
 
 // views all roles
 function viewRoles() {
-  db.query("SELECT * FROM roles", function (err, res) {
+  db.query('SELECT * FROM roles', function (err, res) {
     if (err) throw err;
     console.table(res);
     choices();
@@ -92,8 +97,9 @@ function viewRoles() {
 
 // views all employees
 function viewAEmployees() {
-  db.query("SELECT * FROM employee", function (err, res) {
+  db.query('SELECT * FROM employee', function (err, res) {
     if (err) throw err;
+    console.table(employeeArr);
     console.table(res);
     choices();
   });
@@ -105,38 +111,42 @@ function changeDept() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "addRemove",
-        message: "Would you like to add or remove a department?",
-        choices: ["Add", "Remove"],
+        type: 'list',
+        name: 'addRemove',
+        message: 'Would you like to add or remove a department?',
+        choices: ['Add', 'Remove'],
       },
     ])
     .then((data) => {
-      if (data.addRemove === "Add") {
+      if (data.addRemove === 'Add') {
         inquirer
           .prompt([
             {
-              type: "input",
-              name: "department",
-              message: "What department are you adding?",
+              type: 'input',
+              name: 'department',
+              message: 'What department are you adding?',
               // add validation
             },
           ])
           .then((data) => {
             let sql = `INSERT INTO department (names) VALUES ('${data.department}')`;
-            db.query(sql, [data.department], (err, res) => {
+            db.query(sql, (err, res) => {
               if (err) throw err;
-              console.log("Department added.");
+              console.log(`
+===================================
+  The department has been added.
+===================================`
+              );
               viewDepts();
             });
           });
-      } else if (data.addRemove === "Remove") {
+      } else if (data.addRemove === 'Remove') {
         inquirer
           .prompt([
             {
-              type: "list",
-              name: "department",
-              message: "Which department are you removing?",
+              type: 'list',
+              name: 'department',
+              message: 'Which department are you removing?',
               choices: deptArr,
             },
           ])
@@ -144,7 +154,11 @@ function changeDept() {
             let sql = `DELETE FROM department WHERE id=${data.department}`;
             db.query(sql, [data.department], (err, res) => {
               if (err) throw err;
-              console.log("The department has been removed.");
+              console.log(`
+====================================
+  The department has been removed.
+====================================`
+              );
               viewDepts();
             });
           });
@@ -157,52 +171,53 @@ function changeRole() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "addRemove",
-        message: "Would you like to add or remove a role?",
-        choices: ["Add", "Remove"],
+        type: 'list',
+        name: 'addRemove',
+        message: 'Would you like to add or remove a role?',
+        choices: ['Add', 'Remove'],
       },
     ])
     .then((data) => {
-      if (data.addRemove === "Add") {
+      if (data.addRemove === 'Add') {
         inquirer
           .prompt([
             {
-              type: "input",
-              name: "addedRole",
-              message: "What role are you adding?",
+              type: 'input',
+              name: 'addedRole',
+              message: 'What role are you adding?',
             },
             {
-              type: "input",
-              name: "salary",
-              message: "What is the salary for the new role?",
+              type: 'input',
+              name: 'salary',
+              message: 'What is the salary for the new role?',
             },
             {
-              type: "list",
-              name: "deptID",
-              message: "What department?",
+              type: 'list',
+              name: 'deptID',
+              message: 'What department?',
               choices: deptArr,
             },
           ])
           .then((data) => {
             let sql = `INSERT INTO roles (title, salary, department_id) VALUES (?, ?, ?)`;
-            db.query(
-              sql,
-              [data.addedRole, data.salary, data.deptID],
-              (err, res) => {
+            db.query(sql, [data.addedRole, data.salary, data.deptID], (err, res) => {
                 if (err) throw err;
                 viewRoles();
-                console.log(data.addedRole + " has been added.");
+                console.log(`
+=================================
+   ${data.addedRole} has been added.
+=================================
+                            `);
               }
             );
           });
-      } else if (data.addRemove === "Remove") {
+      } else if (data.addRemove === 'Remove') {
         inquirer
           .prompt([
             {
-              type: "list",
-              name: "deletedRole",
-              message: "Which role would you like to remove?",
+              type: 'list',
+              name: 'deletedRole',
+              message: 'Which role would you like to remove?',
               choices: roleArr,
             },
           ])
@@ -210,7 +225,11 @@ function changeRole() {
             let sql = `DELETE FROM roles WHERE id=${data.deletedRole}`;
             db.query(sql, (err, res) => {
               if (err) throw err;
-              console.log("Role has been removed.");
+              console.log(`
+=============================
+  The role has been removed.
+=============================
+                          `);
               viewRoles();
             });
           });
@@ -223,36 +242,36 @@ function changeEmployee() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "addRemove",
-        message: "Would like to add or remove an employee?",
-        choices: ["Add", "Remove"],
+        type: 'list',
+        name: 'addRemove',
+        message: 'Would like to add or remove an employee?',
+        choices: ['Add', 'Remove'],
       },
     ])
     .then((data) => {
-      if (data.addRemove === "Add") {
+      if (data.addRemove === 'Add') {
         inquirer
           .prompt([
             {
-              type: "input",
-              name: "firstName",
-              message: "What is the new employees first name?",
+              type: 'input',
+              name: 'firstName',
+              message: 'What is the new employees first name?',
             },
             {
-              type: "input",
-              name: "lastName",
-              message: "What is the new employees last name?",
+              type: 'input',
+              name: 'lastName',
+              message: 'What is the new employees last name?',
             },
             {
-              type: "list",
-              name: "deptID",
-              message: "What is the new employees role?",
+              type: 'list',
+              name: 'deptID',
+              message: 'What is the new employees role?',
               choices: roleArr,
             },
             {
-              type: "list",
-              name: "manager",
-              message: "Who is the new employees manager",
+              type: 'list',
+              name: 'manager',
+              message: 'Who is the new employees manager',
               choices: employeeArr,
             },
           ])
@@ -263,6 +282,8 @@ function changeEmployee() {
               [data.firstName, data.lastName, data.manager, data.deptID],
               (err, res) => {
                 if (err) throw err;
+                console.table(employeeArr);
+
                 viewAEmployees();
                 console.log(`
     =============================
@@ -273,13 +294,13 @@ function changeEmployee() {
               }
             );
           });
-      } else if (data.addRemove === "Remove") {
+      } else if (data.addRemove === 'Remove') {
         inquirer
           .prompt([
             {
-              type: "list",
-              name: "employee",
-              message: "Which employee is being removed?",
+              type: 'list',
+              name: 'employee',
+              message: 'Which employee is being removed?',
               choices: employeeArr,
             },
           ])
@@ -288,8 +309,11 @@ function changeEmployee() {
             let sql = `DELETE FROM employee WHERE id=${response.employee}`;
             db.query(sql, [response.employee], (err, res) => {
               if (err) throw err;
-              console.log("Employee has been removed.");
-              viewAEmployees();
+              console.log(`
+    =============================
+      Employee has been removed.
+    =============================`
+                );              viewAEmployees();
             });
           });
       }
@@ -300,27 +324,26 @@ function updateEmployee() {
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "employee",
-        message: "Which employee would you like to update?",
+        type: 'list',
+        name: 'employee',
+        message: 'Which employee would you like to update?',
         choices: employeeArr,
       },
       {
-        type: "list",
-        name: "update",
-        message: "What would you like to update?",
-        choices: ["Manager", "Role"],
+        type: 'list',
+        name: 'update',
+        message: 'What would you like to update?',
+        choices: ['Manager', 'Role'],
       },
     ])
     .then((data) => {
-      console.log(data);
-      if (data.update === "Manager") {
+      if (data.update === 'Manager') {
         inquirer
           .prompt([
             {
-              type: "list",
-              name: "managerUpdate",
-              message: "Who is the new manager",
+              type: 'list',
+              name: 'managerUpdate',
+              message: 'Who is the new manager',
               choices: employeeArr,
             },
           ])
@@ -333,19 +356,22 @@ function updateEmployee() {
               [response.managerUpdate, data.employee],
               (err, res) => {
                 if (err) throw err;
-                console.log("Manager has been updated.");
+                console.log(`
+    =============================
+      Manager has been updated.
+    =============================`
+                );
                 viewAEmployees();
               }
             );
-            choices();
           });
-      } else if (data.update === "Role") {
+      } else if (data.update === 'Role') {
         inquirer
           .prompt([
             {
-              type: "list",
-              name: "roleUpdate",
-              message: "What is the new role?",
+              type: 'list',
+              name: 'roleUpdate',
+              message: 'What is the new role?',
               choices: roleArr,
             },
           ])
@@ -357,25 +383,45 @@ function updateEmployee() {
               [response.managerUpdate, data.employee],
               (err, res) => {
                 if (err) throw err;
-                console.log("Role has been updated.");
+                console.log(`
+    =============================
+      Role has been updated.
+    =============================`
+                );
                 viewAEmployees();
               }
             );
-            choices();
           });
       }
     });
 }
 
-//     .then((data => {
-//     let sql = `UPDATE employee SET ${data.managerUpdate} WHERE ${data.employee} VALUES (?,?)`;
-//     db.query(sql, [data.managerUpdate, data.employee], (err, res) => {
-//         if (err) throw err;
-//         viewAEmployees();
-//         console.log('Employee has been added.');
-//         choices();
-//     })
-// }))
+// Employee list via Manager
+function managedEmployees() {
+  inquirer.prompt([
+    {
+      type: 'list',
+      name: 'manager',
+      message: 'Select employee for managed employee list.',
+      choices: employeeArr
+    }
+  ])
+    .then((data) => {
+      console.log(data.manager)
+  //     let sql = `SELECT CONCAT(first_name, ' ' , last_name) AS Employee
+  //                FROM employee WHERE manager_id=${data.manager}`;
+  //     db.query(sql, [data.manager], (err, res) => {
+  //       if (err) throw err;
+  //       console.log(`
+  // =============================
+  //       Employee List.
+  // =============================`
+  //       );
+  //       viewAEmployees();
+      });
+    });
+};
+
 
 // where should sql const' go?
 // BONUS Update employee managers.
@@ -387,9 +433,10 @@ function updateEmployee() {
 // View employees by department.
 
 // View the total utilized budget of a department—in other words, the combined salaries of all employees in that department.
+// select * from employees where role_id=(${role_id})
 // quit Function
 function exit() {
-  console.log("Leaving the database. Enjoy the day!");
+  console.log('Leaving the database. Enjoy the day!');
   return;
 }
 
