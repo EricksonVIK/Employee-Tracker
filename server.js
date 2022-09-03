@@ -169,10 +169,12 @@ function changeDept() {
             let sql = `INSERT INTO department (names) VALUES ('${data.department}')`;
             db.query(sql, (err, res) => {
               if (err) throw err;
+              deptArr.push(data.department)
               console.log(`
 ===================================
-  The department has been added.
+    Department has been added.
 ===================================`);
+              console.log(deptArr)
               viewDepts();
             });
           });
@@ -187,9 +189,14 @@ function changeDept() {
             },
           ])
           .then((data) => {
+            console.log(data)
             let sql = `DELETE FROM department WHERE id=${data.department}`;
             db.query(sql, [data.department], (err, res) => {
               if (err) throw err;
+              let index = deptArr.indexOf(data.department);
+              if (index > -1) {
+                deptArr.splice(index, 1);
+              }
               console.log(`
 ====================================
   The department has been removed.
