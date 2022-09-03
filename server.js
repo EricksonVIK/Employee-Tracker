@@ -412,7 +412,8 @@ function managedEmployees() {
     ])
     .then((data) => {
       db.query(
-        `SELECT CONCAT(first_name, " " , last_name),  AS Employee FROM employee WHERE manager_id=${data.manager}`,
+        `SELECT CONCAT(first_name, " " , last_name) AS Employee FROM employee 
+        WHERE manager_id=${data.manager}`,
         (err, res) => {
           if (err) throw err;
               console.log(`
@@ -421,9 +422,9 @@ function managedEmployees() {
 =============================`
       );
           console.table(res);
+          choices();
         }
       );
-      choices();
     });
 }
 
@@ -439,6 +440,7 @@ function departmentEmployees() {
       },
     ])
     .then((data) => {
+      console.log (data)
       db.query(
         `SELECT CONCAT(employee.first_name, ' ' , last_name) AS Employee FROM employee
                 LEFT JOIN roles ON employee.role_id=roles.id
@@ -446,12 +448,13 @@ function departmentEmployees() {
                 WHERE department.id=${data.department}`,
         (err, res) => {
           if (err) throw err;
-//                 console.log(`
-// =============================
-//       Department List.
-// =============================`
-//       );
+                console.log(`
+=============================
+      Department List.
+=============================`
+      );
           console.table(res);
+          choices();
         }
       );
     });
