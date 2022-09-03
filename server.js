@@ -134,7 +134,7 @@ function viewAEmployees() {
     if (err) throw err;
     console.log(`
 ===================================
-        Employee List
+         Employee List
 ===================================
     `);
     console.table(res);
@@ -399,8 +399,6 @@ function updateEmployee() {
             },
           ])
           .then((response) => {
-            console.log(response);
-            console.log(data);
             let sql = `UPDATE employee SET manager_id=${response.managerUpdate} WHERE id= ${data.employee}`;
             db.query(
               sql,
@@ -408,10 +406,11 @@ function updateEmployee() {
               (err, res) => {
                 if (err) throw err;
                 console.log(`
-    =============================
-      Manager has been updated.
-    =============================`);
-                viewAEmployees();
+=============================
+  Manager has been updated.
+=============================
+                `);
+                choices();
               }
             );
           });
@@ -426,7 +425,6 @@ function updateEmployee() {
             },
           ])
           .then((response) => {
-            console.log(response);
             let sql = `UPDATE employee SET role_id=${response.roleUpdate} WHERE id= ${data.employee}`;
             db.query(
               sql,
@@ -434,10 +432,10 @@ function updateEmployee() {
               (err, res) => {
                 if (err) throw err;
                 console.log(`
-    =============================
-      Role has been updated.
-    =============================`);
-                viewAEmployees();
+=============================
+    Role has been updated.
+=============================`);
+                choices();
               }
             );
           });
