@@ -162,20 +162,24 @@ function changeDept() {
               type: "input",
               name: "department",
               message: "What department are you adding?",
-              
+              validate: (nameInput) => {
+                if (nameInput) {
+                  return true;
+                } else {
+                  console.log("Please enter a valid department.");
+                }
+              },
             },
           ])
           .then((data) => {
             let sql = `INSERT INTO department (names) VALUES ('${data.department}')`;
             db.query(sql, (err, res) => {
               if (err) throw err;
-              // console.log(res)
-              deptArr.push(data.department)
+              deptArr.push(data.department);
               console.log(`
 ===================================
     ${data.department} has been added.
 ===================================`);
-              // console.log(deptArr)
               viewDepts();
             });
           });
@@ -228,11 +232,26 @@ function changeRole() {
               type: "input",
               name: "addedRole",
               message: "What role are you adding?",
+              validate: (nameInput) => {
+                if (nameInput) {
+                  return true;
+                } else {
+                  console.log("Please enter a valid role.");
+                }
+              },
             },
             {
               type: "input",
               name: "salary",
               message: "What is the salary for the new role?",
+              validate: (salaryInput) => {
+                let pass = salaryInput.match(/^[1-9]\d*$/);
+                if (pass) {
+                  return true;
+                } else {
+                  return "Please only enter a number.";
+                }
+              },
             },
             {
               type: "list",
@@ -248,7 +267,7 @@ function changeRole() {
               [data.addedRole, data.salary, data.deptID],
               (err, res) => {
                 if (err) throw err;
-                roleArr.push(data.addedRole)
+                roleArr.push(data.addedRole);
                 console.log(`
 =================================
    ${data.addedRole} has been added.
@@ -307,11 +326,25 @@ function changeEmployee() {
               type: "input",
               name: "firstName",
               message: "What is the new employees first name?",
+              validate: (nameInput) => {
+                if (nameInput) {
+                  return true;
+                } else {
+                  console.log("Please enter a valid name.");
+                }
+              },
             },
             {
               type: "input",
               name: "lastName",
               message: "What is the new employees last name?",
+              validate: (nameInput) => {
+                if (nameInput) {
+                  return true;
+                } else {
+                  console.log("Please enter a valid name.");
+                }
+              },
             },
             {
               type: "list",
@@ -333,14 +366,10 @@ function changeEmployee() {
               [data.firstName, data.lastName, data.manager, data.deptID],
               (err, res) => {
                 if (err) throw err;
-                // employeeArr.push({name: data.first_name + ' ' + data.last_namenpm})
-                // console.table(employeeArr);
-
                 console.log(`
 =============================
   Employee has been added.
 =============================`);
-                // viewAEmployees();
                 choices();
               }
             );
