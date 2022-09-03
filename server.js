@@ -1,20 +1,19 @@
 // import dependencies
-const inquirer = require('inquirer');
-require('console.table');
+const inquirer = require("inquirer");
+require("console.table");
 
 // adding connections
-const db = require('./db/connections');
-// ---- add a const to Db index after writing functions const {functions...} = require (source)
+const db = require("./db/connections");
 const {
   collectEmployee,
   collectDepartments,
   collectRoles,
-} = require('./db/index');
+} = require("./db/index");
 const deptArr = collectDepartments();
 const roleArr = collectRoles();
 const employeeArr = collectEmployee();
 
-// what would you like to view choices .then view
+// Choices
 function choices() {
   console.log(`
 ===============================
@@ -23,68 +22,67 @@ function choices() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'direction',
-        message: 'What would you like to do?',
+        type: "list",
+        name: "direction",
+        message: "What would you like to do?",
         choices: [
-          'View Departments',
-          'View Roles',
-          'View Employees',
-          'Add/Remove Department',
-          'Add/Remove Role',
-          'Add/Remove Employee',
-          'Update Employee',
-          'View Manager Employee List',
-          'View Department Employee List',
-          'View Department Budget',
-          'Exit',
+          "View Departments",
+          "View Roles",
+          "View Employees",
+          "Add/Remove Department",
+          "Add/Remove Role",
+          "Add/Remove Employee",
+          "Update Employee",
+          "View Manager Employee List",
+          "View Department Employee List",
+          "View Department Budget",
+          "Exit",
         ],
       },
     ])
     .then(function (data) {
-      // console.log(data);
       switch (data.direction) {
-        case 'View Departments':
+        case "View Departments":
           viewDepts();
           break;
 
-        case 'View Roles':
+        case "View Roles":
           viewRoles();
           break;
 
-        case 'View Employees':
+        case "View Employees":
           viewAEmployees();
           break;
 
-        case 'Add/Remove Department':
+        case "Add/Remove Department":
           changeDept();
           break;
 
-        case 'Add/Remove Role':
+        case "Add/Remove Role":
           changeRole();
           break;
 
-        case 'Add/Remove Employee':
+        case "Add/Remove Employee":
           changeEmployee();
           break;
 
-        case 'Update Employee':
+        case "Update Employee":
           updateEmployee();
           break;
 
-        case 'View Manager Employee List':
+        case "View Manager Employee List":
           managedEmployees();
           break;
 
-        case 'View Department Employee List':
+        case "View Department Employee List":
           departmentEmployees();
           break;
 
-        case 'View Department Budget':
+        case "View Department Budget":
           departmentBudget();
           break;
 
-        case 'Exit':
+        case "Exit":
           exit();
           break;
       }
@@ -93,8 +91,15 @@ function choices() {
 
 // View all departments
 function viewDepts() {
-  db.query('SELECT * FROM department', function (err, res) {
+  let sql = `SELECT department.names AS Department, department.id AS ID 
+             FROM department`;
+  db.query(sql, function (err, res) {
     if (err) throw err;
+    console.log(`
+===================================
+        Department List
+===================================
+            `);
     console.table(res);
     choices();
   });
@@ -102,8 +107,16 @@ function viewDepts() {
 
 // views all roles
 function viewRoles() {
-  db.query('SELECT * FROM roles', function (err, res) {
+  let sql = `SELECT roles.id, roles.title AS Title, roles.salary AS Salary, 
+            department.names AS Department FROM roles 
+            LEFT JOIN department on roles.department_id = department.id`;
+  db.query(sql, function (err, res) {
     if (err) throw err;
+    console.log(`
+===================================
+        Role List
+===================================
+        `);
     console.table(res);
     choices();
   });
@@ -111,9 +124,19 @@ function viewRoles() {
 
 // views all employees
 function viewAEmployees() {
-  db.query('SELECT * FROM employee', function (err, res) {
+  let sql = `SELECT employee.id, CONCAT(employee.first_name, ' ' , employee.last_name) AS Employee,
+            roles.title AS Title, department.names AS Department, roles.salary AS Salary, 
+            CONCAT (manager.first_name, ' ' ,manager.last_name) AS Manager
+            FROM employee LEFT JOIN employee manager ON manager.id=employee.manager_id
+            INNER JOIN roles ON employee.role_id = roles.id
+            INNER JOIN department ON department.id=roles.department_id`;
+  db.query(sql, function (err, res) {
     if (err) throw err;
-    // console.table(employeeArr);
+    console.log(`
+===================================
+        Employee List
+===================================
+    `);
     console.table(res);
     choices();
   });
@@ -125,20 +148,20 @@ function changeDept() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'addRemove',
-        message: 'Would you like to add or remove a department?',
-        choices: ['Add', 'Remove'],
+        type: "list",
+        name: "addRemove",
+        message: "Would you like to add or remove a department?",
+        choices: ["Add", "Remove"],
       },
     ])
     .then((data) => {
-      if (data.addRemove === 'Add') {
+      if (data.addRemove === "Add") {
         inquirer
           .prompt([
             {
-              type: 'input',
-              name: 'department',
-              message: 'What department are you adding?',
+              type: "input",
+              name: "department",
+              message: "What department are you adding?",
               // add validation
             },
           ])
@@ -153,13 +176,13 @@ function changeDept() {
               viewDepts();
             });
           });
-      } else if (data.addRemove === 'Remove') {
+      } else if (data.addRemove === "Remove") {
         inquirer
           .prompt([
             {
-              type: 'list',
-              name: 'department',
-              message: 'Which department are you removing?',
+              type: "list",
+              name: "department",
+              message: "Which department are you removing?",
               choices: deptArr,
             },
           ])
@@ -183,30 +206,30 @@ function changeRole() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'addRemove',
-        message: 'Would you like to add or remove a role?',
-        choices: ['Add', 'Remove'],
+        type: "list",
+        name: "addRemove",
+        message: "Would you like to add or remove a role?",
+        choices: ["Add", "Remove"],
       },
     ])
     .then((data) => {
-      if (data.addRemove === 'Add') {
+      if (data.addRemove === "Add") {
         inquirer
           .prompt([
             {
-              type: 'input',
-              name: 'addedRole',
-              message: 'What role are you adding?',
+              type: "input",
+              name: "addedRole",
+              message: "What role are you adding?",
             },
             {
-              type: 'input',
-              name: 'salary',
-              message: 'What is the salary for the new role?',
+              type: "input",
+              name: "salary",
+              message: "What is the salary for the new role?",
             },
             {
-              type: 'list',
-              name: 'deptID',
-              message: 'What department?',
+              type: "list",
+              name: "deptID",
+              message: "What department?",
               choices: deptArr,
             },
           ])
@@ -226,13 +249,13 @@ function changeRole() {
               }
             );
           });
-      } else if (data.addRemove === 'Remove') {
+      } else if (data.addRemove === "Remove") {
         inquirer
           .prompt([
             {
-              type: 'list',
-              name: 'deletedRole',
-              message: 'Which role would you like to remove?',
+              type: "list",
+              name: "deletedRole",
+              message: "Which role would you like to remove?",
               choices: roleArr,
             },
           ])
@@ -257,36 +280,36 @@ function changeEmployee() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'addRemove',
-        message: 'Would like to add or remove an employee?',
-        choices: ['Add', 'Remove'],
+        type: "list",
+        name: "addRemove",
+        message: "Would like to add or remove an employee?",
+        choices: ["Add", "Remove"],
       },
     ])
     .then((data) => {
-      if (data.addRemove === 'Add') {
+      if (data.addRemove === "Add") {
         inquirer
           .prompt([
             {
-              type: 'input',
-              name: 'firstName',
-              message: 'What is the new employees first name?',
+              type: "input",
+              name: "firstName",
+              message: "What is the new employees first name?",
             },
             {
-              type: 'input',
-              name: 'lastName',
-              message: 'What is the new employees last name?',
+              type: "input",
+              name: "lastName",
+              message: "What is the new employees last name?",
             },
             {
-              type: 'list',
-              name: 'deptID',
-              message: 'What is the new employees role?',
+              type: "list",
+              name: "deptID",
+              message: "What is the new employees role?",
               choices: roleArr,
             },
             {
-              type: 'list',
-              name: 'manager',
-              message: 'Who is the new employees manager',
+              type: "list",
+              name: "manager",
+              message: "Who is the new employees manager",
               choices: employeeArr,
             },
           ])
@@ -308,13 +331,13 @@ function changeEmployee() {
               }
             );
           });
-      } else if (data.addRemove === 'Remove') {
+      } else if (data.addRemove === "Remove") {
         inquirer
           .prompt([
             {
-              type: 'list',
-              name: 'employee',
-              message: 'Which employee is being removed?',
+              type: "list",
+              name: "employee",
+              message: "Which employee is being removed?",
               choices: employeeArr,
             },
           ])
@@ -338,26 +361,26 @@ function updateEmployee() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'employee',
-        message: 'Which employee would you like to update?',
+        type: "list",
+        name: "employee",
+        message: "Which employee would you like to update?",
         choices: employeeArr,
       },
       {
-        type: 'list',
-        name: 'update',
-        message: 'What would you like to update?',
-        choices: ['Manager', 'Role'],
+        type: "list",
+        name: "update",
+        message: "What would you like to update?",
+        choices: ["Manager", "Role"],
       },
     ])
     .then((data) => {
-      if (data.update === 'Manager') {
+      if (data.update === "Manager") {
         inquirer
           .prompt([
             {
-              type: 'list',
-              name: 'managerUpdate',
-              message: 'Who is the new manager',
+              type: "list",
+              name: "managerUpdate",
+              message: "Who is the new manager",
               choices: employeeArr,
             },
           ])
@@ -378,13 +401,13 @@ function updateEmployee() {
               }
             );
           });
-      } else if (data.update === 'Role') {
+      } else if (data.update === "Role") {
         inquirer
           .prompt([
             {
-              type: 'list',
-              name: 'roleUpdate',
-              message: 'What is the new role?',
+              type: "list",
+              name: "roleUpdate",
+              message: "What is the new role?",
               choices: roleArr,
             },
           ])
@@ -413,9 +436,9 @@ function managedEmployees() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'manager',
-        message: 'Select employee for managed employee list.',
+        type: "list",
+        name: "manager",
+        message: "Select employee for managed employee list.",
         choices: employeeArr,
       },
     ])
@@ -441,9 +464,9 @@ function departmentEmployees() {
   inquirer
     .prompt([
       {
-        type: 'list',
-        name: 'department',
-        message: 'Which department employees would you like to see?',
+        type: "list",
+        name: "department",
+        message: "Which department employees would you like to see?",
         choices: deptArr,
       },
     ])
@@ -467,46 +490,47 @@ function departmentEmployees() {
 }
 // View budgeted salary for each department
 function departmentBudget() {
-      db.query(
-        `SELECT department.names AS Department, SUM(roles.salary) AS Budget
+  db.query(
+    `SELECT department.names AS Department, SUM(roles.salary) AS Budget
         FROM department LEFT JOIN roles
         ON department.id=roles.department_id
         LEFT JOIN employee 
         ON roles.id=employee.role_id
         GROUP BY department.id`,
-        (err, res) => {
-          if (err) throw err;
-          console.log(`
+    (err, res) => {
+      if (err) throw err;
+      console.log(`
 ===============================
 Budget based on # of Employees.
 ===============================`);
-          console.table(res);
-          choices();
-        }
-      );
+      console.table(res);
+      choices();
+    }
+  );
 }
 
 // quit Function
 function exit() {
-  inquirer.prompt([
-    {
-      type: 'list',
-      name: 'confirmExit',
-      message: 'Are you positive you would like to exit?',
-      choices: ['Yes', 'No']
-    }
-  ])
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "confirmExit",
+        message: "Are you positive you would like to exit?",
+        choices: ["Yes", "No"],
+      },
+    ])
     .then((data) => {
-      if (data.confirmExit === 'Yes') {
+      if (data.confirmExit === "Yes") {
         console.log(`
 =============================
    Employee Tracker Exited
 =============================`);
         return;
-            } else if (data.confirmExit === 'No') {
+      } else if (data.confirmExit === "No") {
         choices();
       }
-  })
+    });
 }
 
 choices();
