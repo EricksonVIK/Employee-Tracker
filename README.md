@@ -26,7 +26,7 @@
   ## Contact 
   https://github.com/EricksonVIK </br>
   [ericksonvik76@gmail.com](mailto:ericksonvik76@gmail.com) </br>
-  [LinkedIn](www.linkedin.com/in/cserickson)
+  [LinkedIn](https://www.linkedin.com/in/cserickson/)
   
 
   ## License
