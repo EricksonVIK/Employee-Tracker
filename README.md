@@ -19,6 +19,7 @@
   Once installation is complete, run npm start in the terminal and follow the prompts. Sample video and screenshots are below.
   
   ## Sample
+  [Sample Video](https://drive.google.com/file/d/1bdmEZmSh2lKuRMW-KZ-j8xd1Uxn3-OgD/view)
 
   ## Contact 
   https://github.com/EricksonVIK </br>

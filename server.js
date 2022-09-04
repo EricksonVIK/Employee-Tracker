@@ -388,6 +388,11 @@ function changeEmployee() {
             let sql = `DELETE FROM employee WHERE id=${response.employee}`;
             db.query(sql, [response.employee], (err, res) => {
               if (err) throw err;
+              let index = employeeArr.indexOf(data.employee);
+              if (index > -1) {
+                deptArr.splice(index, 1);
+              }
+
               console.log(`
 =============================
   Employee has been removed.

@@ -1,9 +1,5 @@
 const db = require("./connections");
-// const choices = require('../server')
 
-// function viewRoles() {
-//     db.promise().query('SELECT * FROM roles')
-//     };
 // Department array
 const collectDepartments = () => {
   const deptArr = [];
@@ -37,8 +33,6 @@ const collectEmployee = () => {
   });
   return employeeArr;
 };
-
-// Manager ID array
 
 // Role array
 const collectRoles = () => {
