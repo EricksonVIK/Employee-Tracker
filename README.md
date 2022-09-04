@@ -9,8 +9,10 @@
   ## Table of contents
   - [Installation](#installation)
   - [Usage](#usage)
+  - [Sample Video](#sample)
   - [Contact Infomation](#contact)
   - [License](#license)
+  - [Screenshots](#screenshots)
 
   ## Installation
   Clone the repository, run npm install for [inquirer](https://www.npmjs.com/package/inquirer/v/8.2.4), [console.table package](https://www.npmjs.com/package/console.table), and [MySQL2](https://www.npmjs.com/package/mysql2) in terminal, run mysql -u root -p in the mysql shell, and populate the tables with source db/db.sql, source db/schema.sql, and source db/seeds.sql.  
@@ -34,4 +36,5 @@
   ## Screenshots       
 ![](images/Screenshot%202.png)
 ![](images/Screenshot%205.png)
-
+![](images/screenshot%201.png)
+![](images/Screenshot%203.png)![](images/Screenshot%204.png)
